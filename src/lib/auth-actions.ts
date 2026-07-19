@@ -3,5 +3,5 @@
 import { signIn } from "@/lib/auth";
 
 export async function signInWithGoogleAction() {
-  await signIn("google", { redirectTo: "/" });
+  await signIn("google", { redirectTo: "/post-login" });
 }

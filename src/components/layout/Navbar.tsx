@@ -10,6 +10,7 @@ const links = [
 
 export async function Navbar() {
   const session = await auth();
+  const isAdmin = session?.user.role === "ADMIN";
 
   return (
     <header className="border-b border-border bg-surface/90 backdrop-blur">
@@ -37,12 +38,14 @@ export async function Navbar() {
         <div className="flex items-center gap-3">
           {session?.user ? (
             <>
-              <Link
-                href="/account"
-                className="text-sm font-medium text-muted transition-colors hover:text-foreground"
-              >
-                My bookings
-              </Link>
+              {!isAdmin ? (
+                <Link
+                  href="/account"
+                  className="text-sm font-medium text-muted transition-colors hover:text-foreground"
+                >
+                  My bookings
+                </Link>
+              ) : null}
               <form
                 action={async () => {
                   "use server";
@@ -65,12 +68,14 @@ export async function Navbar() {
               Log in
             </Link>
           )}
-          <Link
-            href="/villas"
-            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            Book a villa
-          </Link>
+          {!isAdmin ? (
+            <Link
+              href="/villas"
+              className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Book a villa
+            </Link>
+          ) : null}
         </div>
       </div>
     </header>

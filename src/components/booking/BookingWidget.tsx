@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
 
-type PaymentMethod = "CREDIT_CARD" | "GCASH" | "PAYMAYA" | "BANK_TRANSFER" | "PAY_AT_RESORT";
+type PaymentMethod = "CREDIT_CARD" | "PAYPAL";
 
 // Local form shape (native <input type="date"> values are plain strings).
 // The authoritative shape/coercion lives server-side in
@@ -25,10 +25,7 @@ type BookingFormValues = {
 
 const PAYMENT_METHODS: { value: PaymentMethod; label: string }[] = [
   { value: "CREDIT_CARD", label: "Credit / Debit Card" },
-  { value: "GCASH", label: "GCash" },
-  { value: "PAYMAYA", label: "PayMaya" },
-  { value: "BANK_TRANSFER", label: "Bank Transfer" },
-  { value: "PAY_AT_RESORT", label: "Pay at Resort" },
+  { value: "PAYPAL", label: "PayPal" },
 ];
 
 export function BookingWidget({

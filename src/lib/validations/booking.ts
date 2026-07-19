@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const PAYMENT_METHODS = ["CREDIT_CARD", "GCASH", "PAYMAYA", "BANK_TRANSFER", "PAY_AT_RESORT"] as const;
+const PAYMENT_METHODS = ["CREDIT_CARD", "PAYPAL"] as const;
 
 export const createBookingSchema = z
   .object({

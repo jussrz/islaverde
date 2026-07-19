@@ -24,10 +24,7 @@ enum BookingStatus {
 
 enum PaymentMethod {
   CREDIT_CARD
-  GCASH
-  PAYMAYA
-  BANK_TRANSFER
-  PAY_AT_RESORT
+  PAYPAL
 }
 
 enum GalleryCategory {
