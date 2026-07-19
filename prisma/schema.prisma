@@ -22,6 +22,21 @@ enum BookingStatus {
   COMPLETED
 }
 
+enum PaymentMethod {
+  CREDIT_CARD
+  GCASH
+  PAYMAYA
+  BANK_TRANSFER
+  PAY_AT_RESORT
+}
+
+enum GalleryCategory {
+  VILLA
+  DINING
+  RESORT
+  ACTIVITIES
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -72,50 +87,91 @@ model VerificationToken {
 }
 
 model Resort {
-  id          String     @id @default(cuid())
-  name        String
-  slug        String     @unique
-  description String?
-  address     String?
-  city        String?
-  country     String?
-  images      String[]
-  roomTypes   RoomType[]
-  createdAt   DateTime   @default(now())
+  id            String         @id @default(cuid())
+  name          String
+  slug          String         @unique
+  description   String?
+  address       String?
+  city          String?
+  country       String?
+  villas        Villa[]
+  dinings       Dining[]
+  galleryImages GalleryImage[]
+  createdAt     DateTime       @default(now())
 }
 
-model RoomType {
-  id                String    @id @default(cuid())
+model Villa {
+  id                String         @id @default(cuid())
   resortId          String
-  resort            Resort    @relation(fields: [resortId], references: [id], onDelete: Cascade)
+  resort            Resort         @relation(fields: [resortId], references: [id], onDelete: Cascade)
   name              String
+  slug              String         @unique
   description       String?
-  basePricePerNight Decimal   @db.Decimal(10, 2)
+  basePricePerNight Decimal        @db.Decimal(10, 2)
   capacity          Int
-  totalRooms        Int       @default(1)
-  images            String[]
-  amenities         Amenity[] @relation("RoomTypeAmenities")
+  totalRooms        Int            @default(1)
+  amenities         Amenity[]      @relation("VillaAmenities")
+  images            GalleryImage[]
   bookings          Booking[]
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Dining {
+  id           String         @id @default(cuid())
+  resortId     String
+  resort       Resort         @relation(fields: [resortId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String         @unique
+  description  String?
+  cuisineType  String?
+  openingHours String?
+  images       GalleryImage[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model Amenity {
-  id        String     @id @default(cuid())
-  name      String     @unique
-  icon      String?
-  roomTypes RoomType[] @relation("RoomTypeAmenities")
+  id     String  @id @default(cuid())
+  name   String  @unique
+  icon   String?
+  villas Villa[] @relation("VillaAmenities")
+}
+
+// Unified image store for the whole site. RESORT/ACTIVITIES images are
+// resort-wide (no villaId/diningId); VILLA/DINING images are linked to a
+// specific villa or dining venue in addition to their category.
+model GalleryImage {
+  id        String          @id @default(cuid())
+  url       String
+  path      String? // Supabase Storage object path (null for externally-hosted/seed images)
+  category  GalleryCategory
+  caption   String?
+  order     Int             @default(0)
+  resortId  String
+  resort    Resort          @relation(fields: [resortId], references: [id], onDelete: Cascade)
+  villaId   String?
+  villa     Villa?          @relation(fields: [villaId], references: [id], onDelete: Cascade)
+  diningId  String?
+  dining    Dining?         @relation(fields: [diningId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now())
+
+  @@index([category])
 }
 
 model Booking {
   id                      String        @id @default(cuid())
-  userId                  String
-  user                    User          @relation(fields: [userId], references: [id])
-  roomTypeId              String
-  roomType                RoomType      @relation(fields: [roomTypeId], references: [id])
+  userId                  String?
+  user                    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  villaId                 String
+  villa                   Villa         @relation(fields: [villaId], references: [id])
   checkIn                 DateTime      @db.Date
   checkOut                DateTime      @db.Date
   guests                  Int
+  guestName               String
+  guestEmail              String
+  guestPhone              String
+  paymentMethod           PaymentMethod
   status                  BookingStatus @default(PENDING)
   totalPrice              Decimal       @db.Decimal(10, 2)
   guestNotes              String?
@@ -124,5 +180,6 @@ model Booking {
   createdAt               DateTime      @default(now())
   updatedAt               DateTime      @updatedAt
 
-  @@index([roomTypeId, checkIn, checkOut])
+  @@index([villaId, checkIn, checkOut])
+  @@index([guestEmail])
 }

@@ -7,6 +7,7 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    seed: "tsx prisma/seed.ts",
   },
   // CLI/migration commands (migrate, db push, studio) connect directly, bypassing
   // the connection pooler — required for schema changes. The running app uses a
