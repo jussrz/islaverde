@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf7ef;
-  --foreground: #16221f;
+  --background: #ffffff;
+  --foreground: #1a2420;
   --surface: #ffffff;
-  --surface-muted: #f2ede0;
-  --border: #e7e0cf;
-  --primary: #0e7c86;
-  --primary-foreground: #f0fbfa;
-  --accent: #c9a15a;
+  --surface-muted: #f6f4ee;
+  --border: #e8e4d9;
+  --primary: #0c6d76;
+  --primary-foreground: #ffffff;
+  --accent: #b8935a;
   --accent-foreground: #241b06;
-  --muted: #6b7568;
+  --muted: #6b7280;
 }
 
 @theme inline {
@@ -29,20 +29,8 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b1615;
-    --foreground: #eef3ee;
-    --surface: #101f1d;
-    --surface-muted: #16302c;
-    --border: #1f3230;
-    --primary: #35c2c9;
-    --primary-foreground: #06201f;
-    --accent: #d9b56a;
-    --accent-foreground: #241b06;
-    --muted: #93a39a;
-  }
-}
+/* This site always presents its light, editorial resort look — it does not
+   switch to a dark theme on prefers-color-scheme, by design. */
 
 body {
   background: var(--background);

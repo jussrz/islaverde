@@ -5,11 +5,11 @@ import { hashPassword } from "../src/lib/password";
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
-// Stable placeholder photos (LoremFlickr, tag-matched + locked so the same
-// URL always resolves to the same image). Swap these for real uploads via
-// the admin gallery once you have actual resort photography.
-const stockImage = (tags: string, lock: number) =>
-  `https://loremflickr.com/800/600/${tags}?lock=${lock}`;
+// Curated, individually-verified Unsplash photo IDs (free license, no
+// attribution required — https://unsplash.com/license). Swap these for real
+// uploads via the admin gallery once you have actual resort photography.
+const unsplash = (id: string, w = 1200) =>
+  `https://images.unsplash.com/photo-${id}?w=${w}&q=80&auto=format&fit=crop`;
 
 async function main() {
   const resort = await prisma.resort.upsert({
@@ -53,7 +53,7 @@ async function main() {
       capacity: 2,
       totalRooms: 4,
       amenities: ["Private Pool", "Ocean View", "Free WiFi", "Butler Service", "Breakfast Included"],
-      imageTags: "maldives,overwater,villa",
+      imageIds: ["1514282401047-d79a71a590e8", "1590523277543-a94d2e4eb00b", "1586861642026-74a6da22a3cd"],
     },
     {
       slug: "beachfront-pool-villa",
@@ -63,7 +63,7 @@ async function main() {
       capacity: 3,
       totalRooms: 6,
       amenities: ["Private Pool", "Ocean View", "Free WiFi", "Breakfast Included", "Air Conditioning"],
-      imageTags: "maldives,beach,villa,pool",
+      imageIds: ["1602002418679-43121356bf41", "1557750505-e7b4d1c40410", "1499793983690-e29da59ef1c2"],
     },
     {
       slug: "lagoon-suite",
@@ -73,7 +73,7 @@ async function main() {
       capacity: 2,
       totalRooms: 8,
       amenities: ["Ocean View", "Free WiFi", "Air Conditioning", "Mini Bar"],
-      imageTags: "maldives,lagoon,suite,resort",
+      imageIds: ["1575231902142-29aaec0bd547", "1620483829312-71b2ec172fd0", "1564469780933-37609ec45780"],
     },
     {
       slug: "sunset-deluxe-villa",
@@ -83,7 +83,7 @@ async function main() {
       capacity: 2,
       totalRooms: 5,
       amenities: ["Private Pool", "Ocean View", "Free WiFi", "Mini Bar", "Snorkeling Gear"],
-      imageTags: "maldives,sunset,villa,deck",
+      imageIds: ["1609601540898-52ca92508901", "1614505241498-80a3ec936595", "1602002418816-5c0aeef426aa"],
     },
     {
       slug: "family-beach-villa",
@@ -100,11 +100,10 @@ async function main() {
         "Air Conditioning",
         "Snorkeling Gear",
       ],
-      imageTags: "maldives,family,villa,beach",
+      imageIds: ["1551918120-9739cb430c6d", "1586861642026-74a6da22a3cd", "1557750505-e7b4d1c40410"],
     },
   ];
 
-  let imageLock = 100;
   for (const def of villaDefs) {
     const villa = await prisma.villa.upsert({
       where: { slug: def.slug },
@@ -124,11 +123,11 @@ async function main() {
     const existingImages = await prisma.galleryImage.count({ where: { villaId: villa.id } });
     if (existingImages === 0) {
       await prisma.galleryImage.createMany({
-        data: [0, 1, 2].map((i) => ({
+        data: def.imageIds.map((id, i) => ({
           resortId: resort.id,
           villaId: villa.id,
           category: "VILLA" as const,
-          url: stockImage(def.imageTags, imageLock++),
+          url: unsplash(id),
           caption: `${def.name} — view ${i + 1}`,
           order: i,
         })),
@@ -143,7 +142,7 @@ async function main() {
       description: "Fresh-caught seafood served over the water at sunset.",
       cuisineType: "Seafood",
       openingHours: "6:00 PM – 10:30 PM",
-      imageTags: "maldives,restaurant,seafood,overwater",
+      imageIds: ["1779249430124-b5bf40d4f9c9", "1597213515962-3d0a60f05feb"],
     },
     {
       slug: "sandbar-grill",
@@ -151,7 +150,7 @@ async function main() {
       description: "Beachside grill and bar, open all day for casual island dining.",
       cuisineType: "Grill & Bar",
       openingHours: "11:00 AM – 11:00 PM",
-      imageTags: "maldives,beach,bar,grill",
+      imageIds: ["1677517497394-87d635cf7e10", "1766937754702-6c92a3804e1f"],
     },
     {
       slug: "lagoon-cafe",
@@ -159,7 +158,7 @@ async function main() {
       description: "All-day café with breakfast, coffee, and light lagoon-view fare.",
       cuisineType: "Café",
       openingHours: "6:30 AM – 6:00 PM",
-      imageTags: "maldives,cafe,breakfast,resort",
+      imageIds: ["1782558399208-1f511bb57177", "1619676907714-0b9d46a0e764"],
     },
   ];
 
@@ -180,11 +179,11 @@ async function main() {
     const existingImages = await prisma.galleryImage.count({ where: { diningId: dining.id } });
     if (existingImages === 0) {
       await prisma.galleryImage.createMany({
-        data: [0, 1].map((i) => ({
+        data: def.imageIds.map((id, i) => ({
           resortId: resort.id,
           diningId: dining.id,
           category: "DINING" as const,
-          url: stockImage(def.imageTags, imageLock++),
+          url: unsplash(id),
           caption: `${def.name} — view ${i + 1}`,
           order: i,
         })),
@@ -193,12 +192,12 @@ async function main() {
   }
 
   const resortWide = [
-    { tags: "maldives,resort,aerial", category: "RESORT" as const, caption: "Island aerial view" },
-    { tags: "maldives,pool,infinity", category: "RESORT" as const, caption: "Infinity pool" },
-    { tags: "maldives,spa,resort", category: "RESORT" as const, caption: "Overwater spa" },
-    { tags: "maldives,snorkeling,reef", category: "ACTIVITIES" as const, caption: "Reef snorkeling" },
-    { tags: "maldives,kayak,lagoon", category: "ACTIVITIES" as const, caption: "Lagoon kayaking" },
-    { tags: "maldives,sunset,cruise", category: "ACTIVITIES" as const, caption: "Sunset cruise" },
+    { id: "1578922746465-3a80a228f223", category: "RESORT" as const, caption: "Island aerial view" },
+    { id: "1620065487644-1080510335f5", category: "RESORT" as const, caption: "Infinity pool" },
+    { id: "1773924093206-9a433a14bb44", category: "RESORT" as const, caption: "Overwater spa" },
+    { id: "1708649290066-5f617003b93f", category: "ACTIVITIES" as const, caption: "Reef snorkeling" },
+    { id: "1719584128248-ec41df8a41de", category: "ACTIVITIES" as const, caption: "Lagoon kayaking" },
+    { id: "1763581616094-c1b4097972d4", category: "ACTIVITIES" as const, caption: "Sunset cruise" },
   ];
   const existingResortWide = await prisma.galleryImage.count({
     where: { resortId: resort.id, villaId: null, diningId: null },
@@ -208,7 +207,7 @@ async function main() {
       data: resortWide.map((img, i) => ({
         resortId: resort.id,
         category: img.category,
-        url: stockImage(img.tags, imageLock++),
+        url: unsplash(img.id, i === 0 ? 1920 : 1200),
         caption: img.caption,
         order: i,
       })),
