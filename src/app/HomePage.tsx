@@ -24,6 +24,7 @@ export default async function HomePage() {
             src={heroImage.url}
             alt="Islaverde Maldives"
             fill
+            sizes="100vw"
             priority
             className="object-cover"
           />

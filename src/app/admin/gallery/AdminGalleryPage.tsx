@@ -42,7 +42,13 @@ export default async function AdminGalleryPage({
         {images.map((img) => (
           <div key={img.id} className="overflow-hidden rounded-xl border border-border bg-surface">
             <div className="relative aspect-[4/3] w-full bg-surface-muted">
-              <Image src={img.url} alt={img.caption ?? ""} fill className="object-cover" />
+              <Image
+                src={img.url}
+                alt={img.caption ?? ""}
+                fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                className="object-cover"
+              />
             </div>
             <div className="p-3 text-xs text-muted">
               <p className="font-medium text-foreground">{img.category}</p>

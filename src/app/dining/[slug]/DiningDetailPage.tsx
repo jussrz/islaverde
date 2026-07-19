@@ -24,7 +24,13 @@ export default async function DiningDetailPage({
             key={img.id}
             className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-muted"
           >
-            <Image src={img.url} alt={img.caption ?? venue.name} fill className="object-cover" />
+            <Image
+              src={img.url}
+              alt={img.caption ?? venue.name}
+              fill
+              sizes="(min-width: 640px) 50vw, 100vw"
+              className="object-cover"
+            />
           </div>
         ))}
       </div>

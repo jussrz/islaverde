@@ -27,7 +27,14 @@ export default async function VillaDetailPage({
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:grid-rows-2">
         {hero ? (
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-muted sm:col-span-2 sm:row-span-2 sm:aspect-auto">
-            <Image src={hero.url} alt={villa.name} fill className="object-cover" priority />
+            <Image
+              src={hero.url}
+              alt={villa.name}
+              fill
+              sizes="(min-width: 640px) 50vw, 100vw"
+              className="object-cover"
+              priority
+            />
           </div>
         ) : null}
         {rest.slice(0, 2).map((img) => (
@@ -35,7 +42,13 @@ export default async function VillaDetailPage({
             key={img.id}
             className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-muted sm:col-span-2"
           >
-            <Image src={img.url} alt={img.caption ?? villa.name} fill className="object-cover" />
+            <Image
+              src={img.url}
+              alt={img.caption ?? villa.name}
+              fill
+              sizes="(min-width: 640px) 50vw, 100vw"
+              className="object-cover"
+            />
           </div>
         ))}
       </div>
