@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { isGoogleSignInEnabled } from "@/lib/auth";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { registerAction } from "./actions";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -24,6 +26,17 @@ export default async function RegisterPage({
         <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {ERROR_MESSAGES[error] ?? "Something went wrong."}
         </p>
+      ) : null}
+
+      {isGoogleSignInEnabled ? (
+        <div className="mt-6 space-y-4">
+          <GoogleSignInButton />
+          <div className="flex items-center gap-3 text-xs text-muted">
+            <div className="h-px flex-1 bg-border" />
+            or
+            <div className="h-px flex-1 bg-border" />
+          </div>
+        </div>
       ) : null}
 
       <form action={registerAction} className="mt-6 space-y-4">

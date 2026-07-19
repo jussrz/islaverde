@@ -1,5 +1,13 @@
 import Link from "next/link";
+import { isGoogleSignInEnabled } from "@/lib/auth";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { loginAction } from "./actions";
+
+const ERROR_MESSAGES: Record<string, string> = {
+  CredentialsSignin: "Incorrect email or password.",
+  OAuthAccountNotLinked:
+    "That email is already registered with a password. Log in with your password instead.",
+};
 
 export default async function LoginPage({
   searchParams,
@@ -15,8 +23,19 @@ export default async function LoginPage({
 
       {error ? (
         <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          Incorrect email or password.
+          {ERROR_MESSAGES[error] ?? "Something went wrong. Please try again."}
         </p>
+      ) : null}
+
+      {isGoogleSignInEnabled ? (
+        <div className="mt-6 space-y-4">
+          <GoogleSignInButton />
+          <div className="flex items-center gap-3 text-xs text-muted">
+            <div className="h-px flex-1 bg-border" />
+            or
+            <div className="h-px flex-1 bg-border" />
+          </div>
+        </div>
       ) : null}
 
       <form action={loginAction} className="mt-6 space-y-4">
