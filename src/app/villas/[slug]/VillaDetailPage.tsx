@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { BookingWidget } from "@/components/booking/BookingWidget";
 
 export default async function VillaDetailPage({
@@ -10,13 +11,16 @@ export default async function VillaDetailPage({
 }) {
   const { slug } = await params;
 
-  const villa = await prisma.villa.findUnique({
-    where: { slug },
-    include: {
-      amenities: true,
-      images: { orderBy: { order: "asc" } },
-    },
-  });
+  const [villa, session] = await Promise.all([
+    prisma.villa.findUnique({
+      where: { slug },
+      include: {
+        amenities: true,
+        images: { orderBy: { order: "asc" } },
+      },
+    }),
+    auth(),
+  ]);
 
   if (!villa) notFound();
 
@@ -88,6 +92,8 @@ export default async function VillaDetailPage({
               villaId={villa.id}
               basePricePerNight={Number(villa.basePricePerNight)}
               capacity={villa.capacity}
+              defaultGuestName={session?.user?.name ?? undefined}
+              defaultGuestEmail={session?.user?.email ?? undefined}
             />
           </div>
         </div>

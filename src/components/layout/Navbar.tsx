@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { auth, signOut } from "@/lib/auth";
+import { auth } from "@/lib/auth";
+import { UserMenu } from "@/components/layout/UserMenu";
 
 const links = [
   { href: "/villas", label: "Villas" },
@@ -13,7 +14,7 @@ export async function Navbar() {
   const isAdmin = session?.user.role === "ADMIN";
 
   return (
-    <header className="border-b border-border bg-surface/90 backdrop-blur">
+    <header className="relative z-50 border-b border-border bg-surface/90 backdrop-blur">
       <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <Link
           href="/"
@@ -28,7 +29,7 @@ export async function Navbar() {
               {link.label}
             </Link>
           ))}
-          {session?.user.role === "ADMIN" ? (
+          {isAdmin ? (
             <Link href="/admin" className="transition-colors hover:text-foreground">
               Admin
             </Link>
@@ -37,29 +38,11 @@ export async function Navbar() {
 
         <div className="flex items-center gap-3">
           {session?.user ? (
-            <>
-              {!isAdmin ? (
-                <Link
-                  href="/account"
-                  className="text-sm font-medium text-muted transition-colors hover:text-foreground"
-                >
-                  My bookings
-                </Link>
-              ) : null}
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
-                <button
-                  type="submit"
-                  className="text-sm font-medium text-muted transition-colors hover:text-foreground"
-                >
-                  Log out
-                </button>
-              </form>
-            </>
+            <UserMenu
+              name={session.user.name ?? null}
+              email={session.user.email ?? null}
+              isAdmin={isAdmin}
+            />
           ) : (
             <Link
               href="/login"

@@ -28,7 +28,7 @@ export const authConfig = {
       if (pathname.startsWith("/admin")) {
         return session?.user?.role === "ADMIN";
       }
-      if (pathname.startsWith("/account")) {
+      if (pathname.startsWith("/account") || pathname.startsWith("/profile")) {
         return Boolean(session?.user);
       }
       return true;

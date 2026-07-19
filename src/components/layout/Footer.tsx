@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { auth } from "@/lib/auth";
 
-export function Footer() {
+export async function Footer() {
+  const session = await auth();
+  const isAdmin = session?.user.role === "ADMIN";
+
   return (
     <footer className="border-t border-border bg-surface-muted">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -21,8 +25,18 @@ export function Footer() {
             </div>
             <div className="flex flex-col gap-2">
               <span className="font-medium text-foreground">Account</span>
-              <Link href="/login" className="text-muted hover:text-foreground">Log in</Link>
-              <Link href="/account" className="text-muted hover:text-foreground">My bookings</Link>
+              {session?.user ? (
+                <>
+                  <Link href="/profile" className="text-muted hover:text-foreground">Profile</Link>
+                  {!isAdmin ? (
+                    <Link href="/account" className="text-muted hover:text-foreground">
+                      My bookings
+                    </Link>
+                  ) : null}
+                </>
+              ) : (
+                <Link href="/login" className="text-muted hover:text-foreground">Log in</Link>
+              )}
             </div>
           </div>
         </div>
